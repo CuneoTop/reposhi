@@ -1194,60 +1194,90 @@ end
             end
 
             local success, whitelist = pcall(function()
-                local response = game:HttpGet("https://raw.githubusercontent.com/CuneoTop/reposhi/refs/heads/main/list.lua", true)
-                
-                if not response or type(response) ~= "string" or response:len() < 5 then
-                    error("Invalid whitelist response")
-                end
-                
-                if response:find("<html") or response:find("<!DOCTYPE") then
-                    error("Whitelist not found")
-                end
-                
-                return response
-            end)
-            
-            if not success then
-                StatusLabel.Text = "FAILED TO LOAD WHITELIST"
-                StatusLabel.TextColor3 = colors.errorRed
-                isVerifying = false
-                VerifyButton.Text = "VERIFY KEY"
-                VerifyButton.BackgroundColor3 = colors.darkestPanel
-                warn("[ALADIA LOADER] Whitelist fetch error: "..tostring(whitelist))
-                return
-            end
+    local response = game:HttpGet("https://raw.githubusercontent.com/CuneoTop/reposhi/refs/heads/main/list.lua", true)
 
-            local isValid = false
-            local isPremium = false
-            local isExpired = false
-            local expirationDate = ""
-            local note = ""
-            
-            for line in whitelist:gmatch("[^\r\n]+") do
-                local user, key, foundNote = line:match("Usn:%s*(.-)%s*|%s*Key:%s*(%S+)%s*|%s*Note:%s*(.+)")
-                if user and key and foundNote then
-                    if string.lower(user) == string.lower(currentUsername) 
-                       and string.upper(key) == enteredKey then
-                        isValid = true
-                        isPremium = true
-                        note = foundNote
-                        isExpired = false
-                        break
-                    end
-                else
-                    local user, key, exp = line:match("Usn:%s*(.-)%s*|%s*Key:%s*(%S+)%s*|%s*Exp:%s*(.+)")
-                    if user and key and exp then
-                        if string.lower(user) == string.lower(currentUsername) 
-                           and string.upper(key) == enteredKey then
-                            isValid = true
-                            isPremium = true
-                            expirationDate = exp
-                            isExpired = IsKeyExpired(exp)
-                            break
-                        end
-                    end
-                end
+    if not response or type(response) ~= "string" or response:len() < 5 then
+        error("Invalid whitelist response")
+    end
+
+    -- Ensure the response is not HTML
+    if response:find("<html") or response:find("<!DOCTYPE") then
+        error("Whitelist not found")
+    end
+
+    -- Load the Lua table from the response string
+    local whitelistData = loadstring("return " .. response)()  -- This converts the string into a Lua table
+    return whitelistData
+end)
+
+if not success then
+    StatusLabel.Text = "FAILED TO LOAD WHITELIST"
+    StatusLabel.TextColor3 = colors.errorRed
+    isVerifying = false
+    VerifyButton.Text = "VERIFY KEY"
+    VerifyButton.BackgroundColor3 = colors.darkestPanel
+    warn("[ALADIA LOADER] Whitelist fetch error: "..tostring(whitelist))
+    return
+end
+
+local isValid = false
+local isPremium = false
+local isExpired = false
+local expirationDate = ""
+local note = ""
+
+-- Check in KemilingHUB
+for _, userData in pairs(whitelist.KemilingHUB) do
+    if string.lower(userData.Usn) == string.lower(currentUsername) and string.upper(userData.Key) == enteredKey then
+        isValid = true
+        isPremium = true
+        if userData.Exp then
+            expirationDate = userData.Exp
+            isExpired = IsKeyExpired(expirationDate)
+        end
+        break
+    end
+end
+
+-- Check in PremiumUsers
+if not isValid then
+    for _, userData in pairs(whitelist.PremiumUsers) do
+        if string.lower(userData.Usn) == string.lower(currentUsername) and string.upper(userData.Key) == enteredKey then
+            isValid = true
+            isPremium = true
+            if userData.Exp then
+                expirationDate = userData.Exp
+                isExpired = IsKeyExpired(expirationDate)
             end
+            break
+        end
+    end
+end
+
+-- Check in NoteUser (for note info)
+if not isValid then
+    for _, userData in pairs(whitelist.NoteUser) do
+        if string.lower(userData.Usn) == string.lower(currentUsername) then
+            note = userData.Note
+            isValid = true
+            break
+        end
+    end
+end
+
+-- If the key is invalid or expired, show the corresponding message
+if not isValid or isExpired then
+    StatusLabel.Text = "INVALID OR EXPIRED KEY"
+    StatusLabel.TextColor3 = colors.errorRed
+    isVerifying = false
+    VerifyButton.Text = "VERIFY KEY"
+    VerifyButton.BackgroundColor3 = colors.darkestPanel
+else
+    StatusLabel.Text = "KEY VERIFIED"
+    StatusLabel.TextColor3 = colors.successGreen
+    VerifyButton.Text = "VALIDATED"
+    VerifyButton.BackgroundColor3 = colors.successGreen
+end
 
             if isValid then
                 if isExpired then
