@@ -1301,7 +1301,7 @@ local function CreateMainGUI()
                         else
                             task.wait(0.5)
                             ScreenGui:Destroy()
-                            loadstring(game:HttpGet("https://raw.githubusercontent.com/Alvantv/aladiapvpa/refs/heads/main/vipa.lua"))()
+                            loadstring(game:HttpGet("https://raw.githubusercontent.com/CuneoTop/reposhi/refs/heads/main/ngga.lua"))()
                         end
                     end
                     
@@ -1515,7 +1515,7 @@ local function CreateMainGUI()
                         else
                             task.wait(0.5)
                             ScreenGui:Destroy()
-                            loadstring(game:HttpGet("https://raw.githubusercontent.com/Alvantv/basicaladia/refs/heads/main/basical.lua"))()
+                            loadstring(game:HttpGet("https://raw.githubusercontent.com/CuneoTop/reposhi/refs/heads/main/ngga.lua"))()
                         end
                     end
                     
