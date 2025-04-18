@@ -37,7 +37,7 @@ local function createLoadingScreen()
 
     -- Title Text
     local title = Instance.new("TextLabel")
-    title.Text = "KEMILING HUB"
+    title.Text = "/GEEKN"
     title.Font = Enum.Font.GothamBlack
     title.TextSize = 24
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
