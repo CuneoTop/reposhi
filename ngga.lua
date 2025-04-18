@@ -702,41 +702,42 @@ local function aimAtTarget()
     end
 end
 
-local function toggleAimbot(isHeadLock)
-    if isHeadLock then
-        headLockActive = not headLockActive
-        bodyLockActive = false
-    else
-        bodyLockActive = not bodyLockActive
+local function toggleAimbot(mode)
+    if mode == false then
+        -- Turn off aimbot
         headLockActive = false
-    end
-    
-    if bodyLockActive or headLockActive then
-        currentTarget = findClosestPlayer(headLockActive)
-        if currentTarget then
-            game.StarterGui:SetCore("ChatMakeSystemMessage", {
-                Text = (headLockActive and "Head Lock" or "Body Lock").." Aimbot: ON (Target: "..currentTarget.Name..")",
-                Color = headLockActive and Color3.new(1, 0.5, 0) or Color3.new(0, 1, 0),
-                FontSize = Enum.FontSize.Size24
-            })
-        else
-            game.StarterGui:SetCore("ChatMakeSystemMessage", {
-                Text = "No valid targets found",
-                Color = Color3.new(1, 1, 0),
-                FontSize = Enum.FontSize.Size24
-            })
-            bodyLockActive = false
-            headLockActive = false
-        end
-    else
+        bodyLockActive = false
         currentTarget = nil
         game.StarterGui:SetCore("ChatMakeSystemMessage", {
             Text = "Aimbot: OFF",
             Color = Color3.new(1, 0, 0),
             FontSize = Enum.FontSize.Size24
         })
+        return
+    end
+
+    -- mode is either true (head) or nil (body)
+    headLockActive = mode == true
+    bodyLockActive = not headLockActive
+
+    currentTarget = findClosestPlayer(headLockActive)
+    if currentTarget then
+        game.StarterGui:SetCore("ChatMakeSystemMessage", {
+            Text = (headLockActive and "Head Lock" or "Body Lock").." Aimbot: ON (Target: "..currentTarget.Name..")",
+            Color = headLockActive and Color3.new(1, 0.5, 0) or Color3.new(0, 1, 0),
+            FontSize = Enum.FontSize.Size24
+        })
+    else
+        game.StarterGui:SetCore("ChatMakeSystemMessage", {
+            Text = "No valid targets found",
+            Color = Color3.new(1, 1, 0),
+            FontSize = Enum.FontSize.Size24
+        })
+        headLockActive = false
+        bodyLockActive = false
     end
 end
+
 
 -- Movement Features
 local function teleportToLocation()
@@ -896,7 +897,7 @@ local function toggleInvisibility()
     end
 end
 
--- Keybinds
+-- Keybindsss
 game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
     if not processed then
         if input.KeyCode == settings.espKey then
