@@ -903,8 +903,8 @@ game:GetService("UserInputService").InputBegan:Connect(function(input, processed
             toggleESP()
         elseif input.KeyCode == settings.bodyAimbotKey then
             toggleAimbot(false)
-        elseif input.KeyCode == settings.headAimbotKey then
-            toggleAimbot(true)
+        elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
+    toggleAimbot(true)
         elseif input.KeyCode == settings.teleportKey then
             teleportToLocation()
         elseif input.KeyCode == settings.spinKey then
@@ -918,6 +918,14 @@ game:GetService("UserInputService").InputBegan:Connect(function(input, processed
         end
     end
 end)
+
+
+game:GetService("UserInputService").InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then
+        toggleAimbot(false)
+    end
+end)
+
 
 -- Player management
 game.Players.PlayerAdded:Connect(function(player)
