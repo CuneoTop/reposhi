@@ -50,69 +50,78 @@ local function CreateMainGUI()
 
     -- Function to check user status from GitHub
     local function GetUserStatus()
-        local success, whitelist = pcall(function()
-            local response = game:HttpGet("https://raw.githubusercontent.com/CuneoTop/reposhi/refs/heads/main/list.lua", true)
-            
-            if not response or type(response) ~= "string" or response:len() < 5 then
-                error("Invalid whitelist response")
-            end
-            
-            if response:find("<html") or response:find("<!DOCTYPE") then
-                error("Whitelist not found")
-            end
-            
-            return response
-        end)
-
-        if not success then
-            warn("[ALADIA LOADER] Whitelist fetch error: "..tostring(whitelist))
-            return {
-                blacklisted = false,
-                needsPurchase = false,
-                note = "",
-                expirationDate = "UNKNOWN"
-            }
+    local success, whitelist = pcall(function()
+        -- Fetch the whitelist Lua file
+        local response = game:HttpGet("https://raw.githubusercontent.com/CuneoTop/reposhi/refs/heads/main/list.lua", true)
+        
+        -- Check for an invalid response
+        if not response or type(response) ~= "string" or response:len() < 5 then
+            error("Invalid whitelist response")
         end
+        
+        -- Ensure the content is valid Lua and not HTML
+        if response:find("<html") or response:find("<!DOCTYPE") then
+            error("Whitelist not found")
+        end
+        
+        -- Load the whitelist Lua data into a table
+        local whitelistData = loadstring("return " .. response)()  -- Load the Lua table
+        return whitelistData
+    end)
 
-        local status = {
+    -- If fetching failed, return default values
+    if not success then
+        warn("[ALADIA LOADER] Whitelist fetch error: "..tostring(whitelist))
+        return {
             blacklisted = false,
             needsPurchase = false,
             note = "",
-            expirationDate = "NOT FOUND"
+            expirationDate = "UNKNOWN"
         }
-        
-        for line in whitelist:gmatch("[^\r\n]+") do
-            local user, blacklistStatus = line:match("Usn:%s*(.-)%s*|%s*Blacklist:%s*(%S+)")
-            if user and blacklistStatus then
-                if string.lower(user) == string.lower(currentUsername) and string.lower(blacklistStatus) == "true" then
-                    status.blacklisted = true
-                end
+    end
+
+    local status = {
+        blacklisted = false,
+        needsPurchase = false,
+        note = "",
+        expirationDate = "NOT FOUND"
+    }
+
+    -- Now loop through the tables based on the structure
+    for _, userData in pairs(whitelist.KemilingHUB) do
+        if string.lower(userData.Usn) == string.lower(currentUsername) then
+            -- Check for blacklist status
+            if userData.Blacklist then
+                status.blacklisted = true
             end
-            
-            local user, needsBuy = line:match("Usn:%s*(.-)%s*|%s*Nbuy:%s*(%S+)")
-            if user and needsBuy then
-                if string.lower(user) == string.lower(currentUsername) and string.lower(needsBuy) == "true" then
-                    status.needsPurchase = true
-                end
-            end
-            
-            local user, note = line:match("Usn:%s*(.-)%s*|%s*Note:%s*(.+)")
-            if user and note then
-                if string.lower(user) == string.lower(currentUsername) then
-                    status.note = note
-                end
-            end
-            
-            local user, key, exp = line:match("Usn:%s*(.-)%s*|%s*Key:%s*(%S+)%s*|%s*Exp:%s*(.+)")
-            if user and key and exp then
-                if string.lower(user) == string.lower(currentUsername) then
-                    status.expirationDate = exp
-                end
+            -- Check for expiration date
+            if userData.Exp then
+                status.expirationDate = userData.Exp
             end
         end
-        
-        return status
     end
+
+    -- Additional checks for other tables (e.g., PremiumUsers, BuyerIngame, etc.)
+    for _, userData in pairs(whitelist.PremiumUsers) do
+        if string.lower(userData.Usn) == string.lower(currentUsername) then
+            status.needsPurchase = false
+            if userData.Exp then
+                status.expirationDate = userData.Exp
+            end
+        end
+    end
+
+    -- Check if user has any special note
+    for _, userData in pairs(whitelist.NoteUser) do
+        if string.lower(userData.Usn) == string.lower(currentUsername) then
+            status.note = userData.Note
+        end
+    end
+
+    -- Return the status
+    return status
+end
+
 
     -- Check user status
     local userStatus = GetUserStatus()
