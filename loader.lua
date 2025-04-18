@@ -31,7 +31,7 @@ local function CreateMainGUI()
 
     -- Main GUI with ZIndex handling
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "KemilingHUB | Aladia"
+    ScreenGui.Name = "REP//GKDD | Aladia"
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     ScreenGui.ResetOnSpawn = false
     ScreenGui.DisplayOrder = 999
@@ -336,7 +336,7 @@ local function CreateMainGUI()
     Title.Size = UDim2.new(1, -100, 1, 0)
     Title.Position = UDim2.new(0, 130, 0, 0)
     Title.Font = Enum.Font.GothamBold
-    Title.Text = "KemilingHUB | Aladia"
+    Title.Text = "REP//GKDD | Aladia"
     Title.TextColor3 = colors.textColor
     Title.TextSize = 18
     Title.TextXAlignment = Enum.TextXAlignment.Left
@@ -459,7 +459,7 @@ local function CreateMainGUI()
     end)
     
     MenuButton.MouseButton1Click:Connect(function()
-        setclipboard("https://dsc.gg/kemilinghub")
+        setclipboard("https://discord.gg/eJ7zxVTq")
         ShowNotification("Discord link copied to clipboard!", colors.successGreen)
     end)
 
@@ -634,7 +634,7 @@ local function CreateMainGUI()
     FooterText.BackgroundTransparency = 1
     FooterText.Size = UDim2.new(1, 0, 1, 0)
     FooterText.Font = Enum.Font.Gotham
-    FooterText.Text = "KEMILING-HUB | Powered By Aruze"
+    FooterText.Text = "XEL ON TOP MADAFAKA"
     FooterText.TextColor3 = Color3.fromRGB(150, 150, 150)
     FooterText.TextSize = 12
 
@@ -1330,7 +1330,7 @@ local function CreateMainGUI()
             }):Play()
             
             LicenseFrame:Destroy()
-            Title.Text = "KemilingHUB | Aladia"
+            Title.Text = "REP//GKDD| Aladia"
             PremiumButton.Visible = true
             BasicButton.Visible = true
         end)
@@ -1451,7 +1451,7 @@ local function CreateMainGUI()
                 }):Play()
                 
                 BlankFrame:Destroy()
-                Title.Text = "KemilingHUB | Aladia"
+                Title.Text = "REP//GKDD | Aladia"
                 PremiumButton.Visible = true
                 BasicButton.Visible = true
                 isConfirming = false
