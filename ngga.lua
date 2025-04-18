@@ -678,11 +678,25 @@ end
 
 local function aimAtTarget()
     if not currentTarget or not currentTarget.Character then return end
-    
+
+    local humanoid = currentTarget.Character:FindFirstChildOfClass("Humanoid")
+    if not humanoid or humanoid.Health <= 0 then
+        -- target is dead, disable aimbot
+        currentTarget = nil
+        headLockActive = false
+        bodyLockActive = false
+        game.StarterGui:SetCore("ChatMakeSystemMessage", {
+            Text = "Aimbot: OFF (Target Eliminated)",
+            Color = Color3.new(1, 0, 0),
+            FontSize = Enum.FontSize.Size24
+        })
+        return
+    end
+
     local camera = workspace.CurrentCamera
     local targetPosition = nil
     local smoothness = settings.bodyLockSmoothness
-    
+
     if headLockActive then
         local head = currentTarget.Character:FindFirstChild("Head")
         if head then
@@ -690,17 +704,18 @@ local function aimAtTarget()
             smoothness = settings.headLockSmoothness
         end
     end
-    
+
     if not targetPosition and currentTarget.Character:FindFirstChild("HumanoidRootPart") then
         targetPosition = currentTarget.Character.HumanoidRootPart.Position
     end
-    
+
     if targetPosition then
         local currentCF = camera.CFrame
         local targetCF = CFrame.new(camera.CFrame.Position, targetPosition)
         camera.CFrame = currentCF:Lerp(targetCF, smoothness)
     end
 end
+
 
 local function toggleAimbot(mode)
     if mode == false then
