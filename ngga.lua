@@ -633,6 +633,8 @@ local function toggleESP()
     })
 end
 
+settings.aimbotFOV = 50 -- You can tweak this radius as you like
+
 -- Aimbot System
 local function getPreciseHeadPosition(head)
     if not head then return nil end
@@ -646,35 +648,38 @@ local function findClosestPlayer(aimForHead)
     local camera = workspace.CurrentCamera
     local closestPlayer = nil
     local closestDistance = math.huge
-    
+    local screenCenter = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
+
     for _, player in pairs(playerList) do
         if player ~= localPlayer and isEnemy(player) and player.Character then
             if hasLowHealth(player) then continue end
-            
+
             local targetPart = nil
             if aimForHead and player.Character:FindFirstChild("Head") then
                 targetPart = player.Character.Head
             elseif player.Character:FindFirstChild("HumanoidRootPart") then
                 targetPart = player.Character.HumanoidRootPart
             end
-            
+
             if targetPart then
                 local targetPos = aimForHead and getPreciseHeadPosition(targetPart) or targetPart.Position
                 local screenPoint = camera:WorldToViewportPoint(targetPos)
+
                 if screenPoint.Z > 0 then
-                    local distance = (Vector2.new(screenPoint.X, screenPoint.Y) - 
-                                    Vector2.new(camera.ViewportSize.X/2, camera.ViewportSize.Y/2)).Magnitude
-                    if distance < closestDistance then
-                        closestDistance = distance
+                    local distanceFromCenter = (Vector2.new(screenPoint.X, screenPoint.Y) - screenCenter).Magnitude
+
+                    if distanceFromCenter <= settings.aimbotFOV and distanceFromCenter < closestDistance then
+                        closestDistance = distanceFromCenter
                         closestPlayer = player
                     end
                 end
             end
         end
     end
-    
+
     return closestPlayer
 end
+
 
 local function aimAtTarget()
     if not currentTarget or not currentTarget.Character then return end
