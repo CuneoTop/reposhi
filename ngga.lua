@@ -925,20 +925,25 @@ game:GetService("UserInputService").InputBegan:Connect(function(input, processed
         elseif input.KeyCode == settings.bodyAimbotKey then
             toggleAimbot(false)
         elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
-    toggleAimbot(true)
-        elseif input.KeyCode == settings.teleportKey then
-            teleportToLocation()
-        elseif input.KeyCode == settings.spinKey then
-            toggleSpin()
-        elseif input.KeyCode == settings.teleportBehindKey then
-            teleportBehindTarget()
-        elseif input.KeyCode == settings.invisibilityKey then
-            toggleInvisibility()
+            toggleAimbot(true)
+        -- Disabled teleport to location
+        -- elseif input.KeyCode == settings.teleportKey then
+        --     teleportToLocation()
+        -- Disabled spin
+        -- elseif input.KeyCode == settings.spinKey then
+        --     toggleSpin()
+        -- Disabled teleport behind target
+        -- elseif input.KeyCode == settings.teleportBehindKey then
+        --     teleportBehindTarget()
+        -- Disabled invisibility
+        -- elseif input.KeyCode == settings.invisibilityKey then
+        --     toggleInvisibility()
         elseif input.KeyCode == settings.fpsBoostKey then
             toggleFPSBoost()
         end
     end
 end)
+
 
 
 game:GetService("UserInputService").InputEnded:Connect(function(input)
